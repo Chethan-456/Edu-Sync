@@ -81,7 +81,7 @@ export function AdminLoginPage({ onBack, onLoginSuccess }: AdminLoginPageProps) 
             <p className="text-white/80 text-sm">System Administration Portal</p>
           </CardHeader>
 
-          <CardContent className="p-8">
+          <CardContent className="p-6 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {errors.general && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg">

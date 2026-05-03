@@ -100,10 +100,10 @@ export function RoleSelection({ onRoleSelect }: RoleSelectionProps) {
             <Button
               key={role.id}
               onClick={() => onRoleSelect(role.id)}
-              className={`w-full h-20 p-0 overflow-hidden bg-gradient-to-r ${role.gradient} hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl`}
+              className={`w-full min-h-[80px] h-auto p-0 overflow-hidden bg-gradient-to-r ${role.gradient} hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl`}
               variant="ghost"
             >
-              <div className="flex items-center justify-between w-full h-full px-6">
+              <div className="flex items-center justify-between w-full h-full px-4 sm:px-6 py-4">
                 <div className="text-left">
                   <div className="text-gray-800 font-bold text-lg mb-1">
                     {role.title}

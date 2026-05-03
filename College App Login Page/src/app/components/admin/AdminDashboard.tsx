@@ -344,7 +344,7 @@ export function AdminDashboard({ onBack, onNavigate }: AdminDashboardProps) {
               {!selectedDepartment && !studentSearch && (
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-4">Select Department</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {departments.map((dept) => (
                       <Card
                         key={dept.id}
@@ -386,7 +386,7 @@ export function AdminDashboard({ onBack, onNavigate }: AdminDashboardProps) {
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="font-medium text-gray-900">{student.name}</div>
-                              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600 mt-1">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600 mt-1">
                                 <div><span className="font-medium">Register No:</span> {student.registerNo}</div>
                                 <div><span className="font-medium">Department:</span> {student.department}</div>
                                 <div><span className="font-medium">Email:</span> {student.email}</div>
