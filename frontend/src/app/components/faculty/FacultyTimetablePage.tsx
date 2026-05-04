@@ -77,10 +77,7 @@ export function FacultyTimetablePage({ onBack, department = "BCA" }: FacultyTime
               <p className="text-xs sm:text-sm text-gray-600">Working Hours: 7:30 AM - 2:30 PM | Max 4 hours per faculty</p>
             </div>
           </div>
-          <Button className="bg-black text-white hover:bg-gray-800 flex items-center gap-2 w-full sm:w-auto justify-center">
-            <Edit className="w-4 h-4" />
-            Edit Timetable
-          </Button>
+          {/* Edit removed: Faculty can only view timetable */}
         </div>
 
         {/* Timetable Grid */}

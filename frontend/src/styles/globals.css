@@ -1,81 +1,141 @@
 @custom-variant dark (&:is(.dark *));
 
+/* ========================================
+   Edu-Sync Design System v2
+   Vibrant, modern, animated
+   ======================================== */
+
+/* Switzer Font — from user-provided files */
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Regular.woff2') format('woff2'),
+       url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Medium.woff2') format('woff2'),
+       url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Semibold.woff2') format('woff2'),
+       url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Bold.woff2') format('woff2'),
+       url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('/fonts/Switzer_Complete/Fonts/WEB/fonts/Switzer-Extrabold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
+
+  /* ── Vibrant Edu-Sync Palette ── */
+  --es-indigo: #4F46E5;
+  --es-violet: #7C3AED;
+  --es-blue: #3B82F6;
+  --es-cyan: #06B6D4;
+  --es-emerald: #10B981;
+  --es-amber: #F59E0B;
+  --es-rose: #F43F5E;
+  --es-coral: #FB7185;
+  --es-orange: #F97316;
+
+  /* Neutrals */
+  --es-white: #FFFFFF;
+  --es-ghost: #F8FAFC;
+  --es-cloud: #F1F5F9;
+  --es-silver: #E2E8F0;
+  --es-gray: #94A3B8;
+  --es-slate: #64748B;
+  --es-dark: #1E293B;
+  --es-midnight: #0F172A;
+
+  /* Semantic mappings */
+  --background: var(--es-ghost);
+  --foreground: var(--es-dark);
+  --card: var(--es-white);
+  --card-foreground: var(--es-dark);
+  --popover: var(--es-white);
+  --popover-foreground: var(--es-dark);
+  --primary: var(--es-indigo);
+  --primary-foreground: #ffffff;
+  --secondary: var(--es-cloud);
+  --secondary-foreground: var(--es-dark);
+  --muted: var(--es-cloud);
+  --muted-foreground: var(--es-slate);
+  --accent: var(--es-cloud);
+  --accent-foreground: var(--es-dark);
+  --destructive: var(--es-rose);
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
+  --border: var(--es-silver);
   --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
+  --input-background: var(--es-cloud);
+  --switch-background: var(--es-silver);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --ring: var(--es-indigo);
+  --chart-1: var(--es-indigo);
+  --chart-2: var(--es-emerald);
+  --chart-3: var(--es-violet);
+  --chart-4: var(--es-amber);
+  --chart-5: var(--es-rose);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--es-white);
+  --sidebar-foreground: var(--es-dark);
+  --sidebar-primary: var(--es-indigo);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--es-cloud);
+  --sidebar-accent-foreground: var(--es-dark);
+  --sidebar-border: var(--es-silver);
+  --sidebar-ring: var(--es-indigo);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  --background: #0f1214;
+  --foreground: #F8FAFC;
+  --card: #1a1d20;
+  --card-foreground: #F8FAFC;
+  --popover: #1a1d20;
+  --popover-foreground: #F8FAFC;
+  --primary: #818CF8;
+  --primary-foreground: #0F172A;
+  --secondary: #2a2d30;
+  --secondary-foreground: #F8FAFC;
+  --muted: #2a2d30;
+  --muted-foreground: #94A3B8;
+  --accent: #2a2d30;
+  --accent-foreground: #F8FAFC;
+  --destructive: #F43F5E;
+  --destructive-foreground: #fca5a5;
+  --border: #2a2d30;
+  --input: #2a2d30;
+  --ring: #818CF8;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
 }
 
 @theme inline {
@@ -126,10 +186,13 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Switzer', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
@@ -143,62 +206,58 @@
   }
 }
 
-/**
- * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
- */
-@layer base {
-  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
-    h1 {
-      font-size: var(--text-2xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h2 {
-      font-size: var(--text-xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h3 {
-      font-size: var(--text-lg);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h4 {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    p {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
-
-    label {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    button {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    input {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
-  }
-}
-
 html {
   font-size: var(--font-size);
+  scroll-behavior: smooth;
 }
-/* trigger rebuild */
+
+:focus-visible {
+  outline: 2px solid var(--es-indigo);
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: rgba(79, 70, 229, 0.15);
+  color: var(--es-dark);
+}
+
+/* Animated gradient backgrounds */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(2deg); }
+  66% { transform: translateY(6px) rotate(-1deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.5); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}

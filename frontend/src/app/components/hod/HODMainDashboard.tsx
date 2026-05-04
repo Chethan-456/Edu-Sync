@@ -439,13 +439,13 @@ export function HODMainDashboard({ onBack }: HODMainDashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-white border-b border-slate-100">
         <div className="flex items-center justify-between p-4">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">HOD Dashboard</h1>
-            <p className="text-sm text-gray-600">BCA Department Management</p>
+            <h1 className="text-base font-semibold text-slate-900">HOD Dashboard</h1>
+            <p className="text-xs text-slate-500">BCA Department Management</p>
           </div>
           <div className="flex items-center gap-3">
             <AvatarDropdown
@@ -465,10 +465,11 @@ export function HODMainDashboard({ onBack }: HODMainDashboardProps) {
             />
             <Button
               variant="ghost"
+              size="sm"
               onClick={onBack}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="text-slate-500 hover:text-rose-500 hover:bg-red-50 text-xs"
             >
-              <LogOut className="w-4 h-4 mr-2" />
+              <LogOut className="w-4 h-4 mr-1" />
               Logout
             </Button>
           </div>

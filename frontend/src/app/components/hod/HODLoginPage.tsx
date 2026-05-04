@@ -1,305 +1,53 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Eye, EyeOff, RefreshCw, School, Info } from 'lucide-react'
-import { validateCredentials } from '@/components/credentials'
+import { ArrowLeft, Eye, EyeOff, Users } from 'lucide-react'
+import ReCAPTCHA from 'react-google-recaptcha'
 
-interface HODLoginPageProps {
-  onBack: () => void
-  onLoginSuccess: () => void
-  onRegister?: () => void
-}
+const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
 
-export function HODLoginPage({ onBack, onLoginSuccess, onRegister }: HODLoginPageProps) {
-  const [formData, setFormData] = useState({
-    userId: '',
-    password: ''
-  })
-  const [captchaInput, setCaptchaInput] = useState('')
-  const [captchaCode, setCaptchaCode] = useState('HDPX7')
+interface HODLoginPageProps { onBack: () => void; onLoginSuccess: () => void; onRegister?: () => void }
+
+export function HODLoginPage({ onBack, onLoginSuccess }: HODLoginPageProps) {
+  const [formData, setFormData] = useState({ userId: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState<{[key: string]: string}>({})
-  const [showDemoCredentials, setShowDemoCredentials] = useState(false)
+  const [errors, setErrors] = useState<{[k:string]:string}>({})
+  const [captchaOk, setCaptchaOk] = useState(false)
+  const recaptchaRef = useRef<ReCAPTCHA>(null)
 
-  const generateCaptcha = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    let result = ''
-    for (let i = 0; i < 5; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length))
-    }
-    setCaptchaCode(result)
-    setCaptchaInput('')
-  }
-
-  const validateForm = () => {
-    const newErrors: {[key: string]: string} = {}
-
-    if (!formData.userId.trim()) {
-      newErrors.userId = 'User ID is required'
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required'
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
-    }
-
-    if (!captchaInput.trim()) {
-      newErrors.captcha = 'Please enter the captcha'
-    } else if (captchaInput.toUpperCase() !== captchaCode) {
-      newErrors.captcha = 'Invalid captcha code'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!validateForm()) return
-
-    setIsLoading(true)
-
-    // Validate credentials
-    setTimeout(() => {
-      setIsLoading(false)
-      
-      const user = validateCredentials(formData.userId, formData.password, 'hod')
-      if (user) {
-        localStorage.setItem('currentUser', JSON.stringify(user))
-        onLoginSuccess()
-      } else {
-        setErrors({ general: 'Invalid HOD credentials' })
-      }
-    }, 1500)
-  }
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }))
-    }
-  }
+  const onCaptcha = useCallback((t: string | null) => { setCaptchaOk(!!t); if (errors.captcha) setErrors(p => ({ ...p, captcha: '' })) }, [errors.captcha])
+  const validate = () => { const e: {[k:string]:string} = {}; if (!formData.userId.trim()) e.userId = 'User ID required'; if (!formData.password) e.password = 'Password required'; else if (formData.password.length < 6) e.password = 'Min 6 characters'; if (!captchaOk) e.captcha = 'Complete the CAPTCHA'; setErrors(e); return Object.keys(e).length === 0 }
+  const handleSubmit = async (ev: React.FormEvent) => { ev.preventDefault(); if (!validate()) return; setIsLoading(true); setTimeout(() => { setIsLoading(false); if (formData.userId.trim() && formData.password.length >= 6) { localStorage.setItem('currentUser', JSON.stringify({ username: formData.userId, name: 'HOD User', role: 'hod' })); onLoginSuccess() } else { setErrors({ general: 'Invalid credentials.' }); recaptchaRef.current?.reset(); setCaptchaOk(false) } }, 1200) }
+  const onChange = (f: string, v: string) => { setFormData(p => ({ ...p, [f]: v })); if (errors[f]) setErrors(p => ({ ...p, [f]: '' })); if (errors.general) setErrors(p => ({ ...p, general: '' })) }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-50 to-teal-100 flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          className="mb-6 text-gray-600 hover:text-gray-800"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Role Selection
-        </Button>
-
-        <Card className="shadow-2xl border-0 overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-green-600 to-teal-600 text-white text-center py-8">
-            {/* College Branding */}
-            <div className="text-center mb-8">
-              <div className="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
-                <School className="w-10 h-10 text-white" />
-              </div>
-              <h2 className="text-white mb-2">HOD Access</h2>
-              <p className="text-white/80 text-sm">Department Management Login</p>
-            </div>
-          </CardHeader>
-
-          <CardContent className="p-8">
-            {/* Demo Credentials Helper */}
-            <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowDemoCredentials(!showDemoCredentials)}
-                className="w-full text-green-700 hover:bg-green-100"
-              >
-                <Info className="w-4 h-4 mr-2" />
-                {showDemoCredentials ? 'Hide' : 'Show'} Demo Credentials
-              </Button>
-              {showDemoCredentials && (
-                <div className="mt-3 p-3 bg-white rounded border">
-                  <p className="text-xs text-gray-700 mb-2 font-medium">Demo HOD Credentials:</p>
-                  <div className="space-y-1 text-xs text-gray-600">
-                    <div><strong>BCA HOD:</strong> hod_bca / HodBCA@123</div>
-                    <div><strong>BCOM HOD:</strong> hod_bcom / HodBCOM@123</div>
-                    <div><strong>BBA HOD:</strong> hod_bba / HodBBA@123</div>
-                    <div><strong>Kannada HOD:</strong> hod_kannada / HodKannada@123</div>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* General Error */}
-              {errors.general && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600 text-center">{errors.general}</p>
-                </div>
-              )}
-
-              {/* User ID Field */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  User ID
-                </label>
-                <Input
-                  type="text"
-                  value={formData.userId}
-                  onChange={(e) => handleInputChange('userId', e.target.value)}
-                  placeholder="Enter your user ID"
-                  className={`h-12 ${errors.userId ? 'border-red-500' : ''}`}
-                  disabled={isLoading}
-                />
-                {errors.userId && (
-                  <p className="text-sm text-red-600">{errors.userId}</p>
-                )}
-              </div>
-
-              {/* Password Field */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    placeholder="Enter your password"
-                    className={`h-12 pr-12 ${errors.password ? 'border-red-500' : ''}`}
-                    disabled={isLoading}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 p-2 h-auto"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={isLoading}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <Eye className="w-4 h-4 text-gray-400" />
-                    )}
-                  </Button>
-                </div>
-                {errors.password && (
-                  <p className="text-sm text-red-600">{errors.password}</p>
-                )}
-              </div>
-
-              {/* Captcha Section */}
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700">
-                  Security Verification
-                </label>
-                
-                {/* Captcha Display */}
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 h-12 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-50 to-teal-50 opacity-50"></div>
-                    <div className="relative">
-                      <span className="text-xl font-mono font-bold text-gray-700 tracking-wider transform -rotate-2">
-                        {captchaCode}
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform rotate-12"></div>
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={generateCaptcha}
-                    className="p-3 h-12"
-                    disabled={isLoading}
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                  </Button>
-                </div>
-
-                {/* Captcha Input */}
-                <Input
-                  type="text"
-                  value={captchaInput}
-                  onChange={(e) => {
-                    setCaptchaInput(e.target.value)
-                    if (errors.captcha) {
-                      setErrors(prev => ({ ...prev, captcha: '' }))
-                    }
-                  }}
-                  placeholder="Enter the code above"
-                  className={`h-12 ${errors.captcha ? 'border-red-500' : ''}`}
-                  disabled={isLoading}
-                  maxLength={5}
-                />
-                {errors.captcha && (
-                  <p className="text-sm text-red-600">{errors.captcha}</p>
-                )}
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full h-12 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white shadow-lg"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Signing In...
-                  </div>
-                ) : (
-                  'Sign In'
-                )}
-              </Button>
-
-              {/* Additional Options */}
-              <div className="text-center space-y-3">
-                <a href="#" className="text-sm text-green-600 hover:text-green-700 hover:underline">
-                  Forgot Password?
-                </a>
-                <div className="text-xs text-gray-500">
-                  Contact admin for account assistance
-                </div>
-              </div>
-            </form>
-
-            {/* Register Link */}
-            {onRegister && (
-              <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-                <p className="text-sm text-gray-600 mb-2">Don't have an account?</p>
-                <button
-                  type="button"
-                  onClick={onRegister}
-                  className="text-sm text-green-600 hover:text-green-700 hover:underline font-medium transition-colors"
-                  disabled={isLoading}
-                >
-                  Register as New Faculty/HOD
-                </button>
-              </div>
-            )}
-          </CardContent>
-
-          {/* Footer */}
-          <div className="text-center mt-6">
-            <p className="text-gray-400 text-sm">
-              Protected by advanced security measures
-            </p>
-            <div className="flex items-center justify-center gap-4 mt-3 text-gray-300 text-xs">
-              <span>© 2024 College Management System</span>
-              <span>•</span>
-              <span>All rights reserved</span>
-            </div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+      <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-violet-100/50 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-purple-100/40 blur-3xl pointer-events-none" />
+      <motion.div className="w-full max-w-md relative z-10" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <motion.button onClick={onBack} className="flex items-center gap-2 text-sm text-slate-500 hover:text-violet-600 mb-6 transition-colors" whileHover={{ x: -3 }}><ArrowLeft className="w-4 h-4" /> Back</motion.button>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
+          <div className="bg-gradient-to-r from-violet-600 to-purple-500 px-8 py-10 text-center relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10"><svg width="100%" height="100%"><defs><pattern id="dh" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="white"/></pattern></defs><rect width="100%" height="100%" fill="url(#dh)"/></svg></div>
+            <motion.div className="relative mx-auto w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-5 backdrop-blur-sm" initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}><Users className="w-8 h-8 text-white" /></motion.div>
+            <h2 className="text-xl font-bold text-white mb-1">Head of Department</h2>
+            <p className="text-sm text-violet-200">Department Management Login</p>
           </div>
-        </Card>
-      </div>
+          <div className="p-6 sm:p-8">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {errors.general && <div className="p-3 bg-red-50 border border-red-200 rounded-xl"><p className="text-sm text-red-600">{errors.general}</p></div>}
+              <div className="space-y-1.5"><label className="text-sm font-medium text-slate-600">User ID</label><Input type="text" value={formData.userId} onChange={e => onChange('userId', e.target.value)} placeholder="Enter user ID" className={`h-11 bg-slate-50 border-slate-200 focus:border-violet-400 rounded-xl ${errors.userId ? 'border-red-400' : ''}`} disabled={isLoading} />{errors.userId && <p className="text-xs text-red-500">{errors.userId}</p>}</div>
+              <div className="space-y-1.5"><label className="text-sm font-medium text-slate-600">Password</label><div className="relative"><Input type={showPassword ? 'text' : 'password'} value={formData.password} onChange={e => onChange('password', e.target.value)} placeholder="Enter password" className={`h-11 pr-11 bg-slate-50 border-slate-200 focus:border-violet-400 rounded-xl ${errors.password ? 'border-red-400' : ''}`} disabled={isLoading} /><button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-violet-500" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button></div>{errors.password && <p className="text-xs text-red-500">{errors.password}</p>}</div>
+              <div className="space-y-1.5"><label className="text-sm font-medium text-slate-600">Security Verification</label><div className="flex justify-center"><ReCAPTCHA ref={recaptchaRef} sitekey={RECAPTCHA_SITE_KEY} onChange={onCaptcha} theme="light" size="normal" /></div>{errors.captcha && <p className="text-xs text-red-500 text-center">{errors.captcha}</p>}</div>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}><Button type="submit" className="w-full h-11 bg-gradient-to-r from-violet-600 to-purple-500 text-white hover:from-violet-700 hover:to-purple-600 rounded-xl font-semibold shadow-lg shadow-violet-500/25" disabled={isLoading}>{isLoading ? <div className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Signing In...</div> : 'Sign In'}</Button></motion.div>
+              <div className="text-center"><button type="button" className="text-xs text-slate-400 hover:text-violet-600 hover:underline" onClick={() => alert('Contact System Administrator.')} disabled={isLoading}>Forgot Password?</button></div>
+            </form>
+          </div>
+        </div>
+        <p className="text-center text-xs text-slate-400 mt-6">© {new Date().getFullYear()} Edu-Sync · Secure portal</p>
+      </motion.div>
     </div>
   )
 }

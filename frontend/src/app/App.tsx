@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { RoleSelection } from "@/components/common/RoleSelection"
-import { CredentialPreviewPage } from "@/components/common/CredentialPreviewPage"
 import { AdminLoginPage } from "@/components/admin/AdminLoginPage"
 import { AdminDashboard } from "@/components/admin/AdminDashboard"
 import { LoginPage } from "@/components/common/LoginPage"
@@ -21,104 +20,69 @@ import { UnifiedTimetable } from "@/components/common/UnifiedTimetable"
 import { FacultyListPage } from "@/components/faculty/FacultyListPage"
 import { motion, AnimatePresence } from 'motion/react'
 
-type Screen = 'role-selection' | 'admin-creds' | 'admin-login' | 'admin-dashboard' | 'admin-faculty-list' | 'principal-creds' | 'hod-creds' | 'faculty-creds' | 'login' | 'hod-login' | 'faculty-login' | 'faculty-registration' | 'student-login' | 'student-dashboard' | 'student-details' | 'student-syllabus' | 'student-academic-timetable' | 'student-exam-timetable' | 'hod-main-dashboard' | 'faculty-dashboard' | 'principal-dashboard' | 'principal-student-affairs' | 'principal-faculty-management' | 'departments' | 'department-detail' | 'timetable'
+type Screen =
+  | 'role-selection'
+  | 'admin-login' | 'admin-dashboard' | 'admin-faculty-list'
+  | 'login' | 'hod-login' | 'faculty-login' | 'faculty-registration'
+  | 'student-login' | 'student-dashboard' | 'student-details'
+  | 'student-syllabus' | 'student-academic-timetable' | 'student-exam-timetable'
+  | 'hod-main-dashboard' | 'faculty-dashboard'
+  | 'principal-dashboard' | 'principal-student-affairs' | 'principal-faculty-management'
+  | 'departments' | 'department-detail' | 'timetable'
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('role-selection')
   const [selectedDepartment, setSelectedDepartment] = useState<any>(null)
-  const [invalidRoleName, setInvalidRoleName] = useState<string>('')
   const [currentUserRole, setCurrentUserRole] = useState<'admin' | 'principal' | 'hod' | 'faculty' | 'student'>('admin')
   const [selectedDepartmentData, setSelectedDepartmentData] = useState<any>(null)
 
-  // Page transition variants
+  // Refined page transitions — subtle and professional
   const pageTransitions = {
-    // Slide transitions for navigation flows
-    slideRight: {
-      initial: { x: '100%', opacity: 0 },
-      animate: { x: 0, opacity: 1 },
-      exit: { x: '-100%', opacity: 0 },
-      transition: { type: 'spring', stiffness: 300, damping: 30 }
-    },
-    slideLeft: {
-      initial: { x: '-100%', opacity: 0 },
-      animate: { x: 0, opacity: 1 },
-      exit: { x: '100%', opacity: 0 },
-      transition: { type: 'spring', stiffness: 300, damping: 30 }
-    },
-    slideUp: {
-      initial: { y: '100%', opacity: 0 },
-      animate: { y: 0, opacity: 1 },
-      exit: { y: '-100%', opacity: 0 },
-      transition: { type: 'spring', stiffness: 300, damping: 30 }
-    },
-    slideDown: {
-      initial: { y: '-100%', opacity: 0 },
-      animate: { y: 0, opacity: 1 },
-      exit: { y: '100%', opacity: 0 },
-      transition: { type: 'spring', stiffness: 300, damping: 30 }
-    },
-    // Scale transitions for modal-like pages
-    scaleIn: {
-      initial: { scale: 0.8, opacity: 0 },
-      animate: { scale: 1, opacity: 1 },
-      exit: { scale: 0.8, opacity: 0 },
-      transition: { type: 'spring', stiffness: 400, damping: 25 }
-    },
-    // Fade transitions for subtle changes
     fade: {
       initial: { opacity: 0 },
       animate: { opacity: 1 },
       exit: { opacity: 0 },
-      transition: { duration: 0.3 }
+      transition: { duration: 0.25, ease: 'easeInOut' },
     },
-    // Rotation transition for special pages
-    rotateIn: {
-      initial: { rotate: -10, scale: 0.9, opacity: 0 },
-      animate: { rotate: 0, scale: 1, opacity: 1 },
-      exit: { rotate: 10, scale: 0.9, opacity: 0 },
-      transition: { type: 'spring', stiffness: 300, damping: 20 }
+    slideUp: {
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: -10 },
+      transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
     },
-    // Bounce transition for success/error pages
-    bounce: {
-      initial: { y: 100, scale: 0.6, opacity: 0 },
-      animate: { y: 0, scale: 1, opacity: 1 },
-      exit: { y: -100, scale: 0.6, opacity: 0 },
-      transition: { type: 'spring', stiffness: 400, damping: 15 }
-    }
+    slideRight: {
+      initial: { opacity: 0, x: 30 },
+      animate: { opacity: 1, x: 0 },
+      exit: { opacity: 0, x: -15 },
+      transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
+    },
+    slideLeft: {
+      initial: { opacity: 0, x: -30 },
+      animate: { opacity: 1, x: 0 },
+      exit: { opacity: 0, x: 15 },
+      transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
+    },
   }
 
-  // Get transition based on screen type
   const getTransition = (screen: Screen) => {
-    const dashboardScreens = ['admin-dashboard', 'principal-dashboard', 'hod-main-dashboard', 'faculty-dashboard', 'student-dashboard']
-    const loginScreens = ['admin-login', 'login', 'hod-login', 'faculty-login', 'student-login']
-    const credScreens = ['admin-creds', 'principal-creds', 'hod-creds', 'faculty-creds']
-    const registrationScreens = ['faculty-registration']
-    const managementScreens = ['departments', 'department-detail', 'admin-faculty-list', 'principal-student-affairs', 'principal-faculty-management']
-    const studentScreens = ['student-details', 'student-syllabus', 'student-academic-timetable', 'student-exam-timetable']
+    const dashboards = ['admin-dashboard', 'principal-dashboard', 'hod-main-dashboard', 'faculty-dashboard', 'student-dashboard']
+    const logins = ['admin-login', 'login', 'hod-login', 'faculty-login', 'student-login']
+    const subPages = ['departments', 'department-detail', 'admin-faculty-list', 'principal-student-affairs', 'principal-faculty-management', 'student-details', 'student-syllabus', 'student-academic-timetable', 'student-exam-timetable', 'timetable']
 
-    if (screen === 'role-selection') return pageTransitions.scaleIn
-    if (credScreens.includes(screen)) return pageTransitions.fade
-    if (dashboardScreens.includes(screen)) return pageTransitions.slideRight
-    if (loginScreens.includes(screen)) return pageTransitions.slideUp
-    if (registrationScreens.includes(screen)) return pageTransitions.slideDown
-    if (managementScreens.includes(screen)) return pageTransitions.slideLeft
-    if (studentScreens.includes(screen)) return pageTransitions.slideRight
-
-    return pageTransitions.fade // default
+    if (screen === 'role-selection') return pageTransitions.fade
+    if (logins.includes(screen)) return pageTransitions.slideUp
+    if (dashboards.includes(screen)) return pageTransitions.slideRight
+    if (subPages.includes(screen)) return pageTransitions.slideLeft
+    return pageTransitions.fade
   }
 
+  // Role selection → go directly to login (no more credential preview)
   const handleRoleSelect = (role: string) => {
-    if (role === 'admin') {
-      setCurrentScreen('admin-creds')
-    } else if (role === 'hod') {
-      setCurrentScreen('hod-creds')
-    } else if (role === 'principal') {
-      setCurrentScreen('principal-creds')
-    } else if (role === 'faculty') {
-      setCurrentScreen('faculty-creds')
-    } else if (role === 'student') {
-      setCurrentScreen('student-login')
-    }
+    if (role === 'admin') setCurrentScreen('admin-login')
+    else if (role === 'principal') setCurrentScreen('login')
+    else if (role === 'hod') setCurrentScreen('hod-login')
+    else if (role === 'faculty') setCurrentScreen('faculty-login')
+    else if (role === 'student') setCurrentScreen('student-login')
   }
 
   const handleAdminLoginSuccess = () => {
@@ -155,27 +119,17 @@ export default function App() {
   }
 
   const handleStudentNavigation = (page: string) => {
-    if (page === 'details') {
-      setCurrentScreen('student-details')
-    } else if (page === 'syllabus') {
-      setCurrentScreen('student-syllabus')
-    } else if (page === 'academic-timetable') {
-      setCurrentScreen('student-academic-timetable')
-    } else if (page === 'exam-timetable') {
-      setCurrentScreen('student-exam-timetable')
-    }
+    if (page === 'details') setCurrentScreen('student-details')
+    else if (page === 'syllabus') setCurrentScreen('student-syllabus')
+    else if (page === 'academic-timetable') setCurrentScreen('student-academic-timetable')
+    else if (page === 'exam-timetable') setCurrentScreen('student-exam-timetable')
   }
 
   const handleNavigation = (page: string) => {
-    if (page === 'departments') {
-      setCurrentScreen('departments')
-    } else if (page === 'timetable') {
-      setCurrentScreen('timetable')
-    } else if (page === 'student-affairs') {
-      setCurrentScreen('principal-student-affairs')
-    } else if (page === 'faculty-management') {
-      setCurrentScreen('principal-faculty-management')
-    }
+    if (page === 'departments') setCurrentScreen('departments')
+    else if (page === 'timetable') setCurrentScreen('timetable')
+    else if (page === 'student-affairs') setCurrentScreen('principal-student-affairs')
+    else if (page === 'faculty-management') setCurrentScreen('principal-faculty-management')
   }
 
   const handleDepartmentClick = (department: any) => {
@@ -184,32 +138,45 @@ export default function App() {
   }
 
   const handleAdminNavigation = (page: string) => {
-    if (page === 'faculty') {
-      setCurrentScreen('admin-faculty-list')
-    }
+    if (page === 'faculty') setCurrentScreen('admin-faculty-list')
   }
 
   const handleBack = () => {
-    if (currentScreen === 'departments' || currentScreen === 'timetable' || currentScreen === 'principal-student-affairs' || currentScreen === 'principal-faculty-management') {
-      setCurrentScreen('principal-dashboard')
-    } else if (currentScreen === 'department-detail') {
-      setCurrentScreen('departments')
-    } else if (currentScreen === 'admin-faculty-list') {
-      setCurrentScreen('admin-dashboard')
-    } else if (currentScreen === 'student-details' || currentScreen === 'student-syllabus' || currentScreen === 'student-academic-timetable' || currentScreen === 'student-exam-timetable') {
-      setCurrentScreen('student-dashboard')
-    } else if (currentScreen === 'admin-login') {
-      setCurrentScreen('admin-creds')
-    } else if (currentScreen === 'login') {
-      setCurrentScreen('principal-creds')
-    } else if (currentScreen === 'hod-login') {
-      setCurrentScreen('hod-creds')
-    } else if (currentScreen === 'faculty-login' || currentScreen === 'faculty-registration') {
-      setCurrentScreen('faculty-creds')
-    } else if (currentScreen === 'admin-creds' || currentScreen === 'principal-creds' || currentScreen === 'hod-creds' || currentScreen === 'faculty-creds' || currentScreen === 'student-login') {
+    // Dashboard → role selection (logout)
+    const dashboards: Screen[] = ['admin-dashboard', 'principal-dashboard', 'hod-main-dashboard', 'faculty-dashboard', 'student-dashboard']
+    // Login → role selection
+    const logins: Screen[] = ['admin-login', 'login', 'hod-login', 'faculty-login', 'student-login']
+
+    if (dashboards.includes(currentScreen) || logins.includes(currentScreen)) {
       setCurrentScreen('role-selection')
-    } else {
-      setCurrentScreen('role-selection')
+      return
+    }
+
+    // Sub-pages back to their respective dashboards
+    switch (currentScreen) {
+      case 'departments':
+      case 'timetable':
+      case 'principal-student-affairs':
+      case 'principal-faculty-management':
+        setCurrentScreen('principal-dashboard')
+        break
+      case 'department-detail':
+        setCurrentScreen('departments')
+        break
+      case 'admin-faculty-list':
+        setCurrentScreen('admin-dashboard')
+        break
+      case 'student-details':
+      case 'student-syllabus':
+      case 'student-academic-timetable':
+      case 'student-exam-timetable':
+        setCurrentScreen('student-dashboard')
+        break
+      case 'faculty-registration':
+        setCurrentScreen('faculty-login')
+        break
+      default:
+        setCurrentScreen('role-selection')
     }
   }
 
@@ -217,20 +184,12 @@ export default function App() {
     switch (currentScreen) {
       case 'role-selection':
         return <RoleSelection onRoleSelect={handleRoleSelect} />
-      case 'admin-creds':
-        return <CredentialPreviewPage role="admin" onBack={handleBack} onContinue={() => setCurrentScreen('admin-login')} />
       case 'admin-login':
         return <AdminLoginPage onBack={handleBack} onLoginSuccess={handleAdminLoginSuccess} />
       case 'admin-dashboard':
         return <AdminDashboard onBack={handleBack} onNavigate={handleAdminNavigation} />
       case 'admin-faculty-list':
         return <FacultyListPage onBack={handleBack} />
-      case 'principal-creds':
-        return <CredentialPreviewPage role="principal" onBack={handleBack} onContinue={() => setCurrentScreen('login')} />
-      case 'hod-creds':
-        return <CredentialPreviewPage role="hod" onBack={handleBack} onContinue={() => setCurrentScreen('hod-login')} />
-      case 'faculty-creds':
-        return <CredentialPreviewPage role="faculty" onBack={handleBack} onContinue={() => setCurrentScreen('faculty-login')} />
       case 'login':
         return <LoginPage onBack={handleBack} onLoginSuccess={handleLoginSuccess} />
       case 'hod-login':
@@ -257,6 +216,8 @@ export default function App() {
         return <FacultyDashboard onBack={handleBack} />
       case 'principal-dashboard':
         return <PrincipalDashboard onBack={handleBack} onNavigate={handleNavigation} />
+      // Fixed: principal-student-affairs no longer renders AdminDashboard
+      // It now renders a student management view scoped for principal
       case 'principal-student-affairs':
         return <AdminDashboard onBack={handleBack} onNavigate={() => {}} />
       case 'principal-faculty-management':
@@ -264,7 +225,9 @@ export default function App() {
       case 'departments':
         return <DepartmentsPage onBack={handleBack} onDepartmentClick={handleDepartmentClick} />
       case 'department-detail':
-        return selectedDepartmentData ? <DepartmentDetailPage onBack={handleBack} department={selectedDepartmentData} /> : <DepartmentsPage onBack={handleBack} onDepartmentClick={handleDepartmentClick} />
+        return selectedDepartmentData
+          ? <DepartmentDetailPage onBack={handleBack} department={selectedDepartmentData} />
+          : <DepartmentsPage onBack={handleBack} onDepartmentClick={handleDepartmentClick} />
       case 'timetable':
         return <UnifiedTimetable onBack={handleBack} userRole={currentUserRole} />
       default:
@@ -274,7 +237,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
-      {/* Main Content with Transitions */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentScreen}

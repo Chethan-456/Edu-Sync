@@ -1,173 +1,78 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { ArrowLeft, Eye, EyeOff, Shield } from 'lucide-react'
 
-interface AdminLoginPageProps {
-  onBack: () => void
-  onLoginSuccess: () => void
-}
+interface AdminLoginPageProps { onBack: () => void; onLoginSuccess: () => void }
 
 export function AdminLoginPage({ onBack, onLoginSuccess }: AdminLoginPageProps) {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: ''
-  })
+  const [formData, setFormData] = useState({ username: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [errors, setErrors] = useState<{[k:string]:string}>({})
 
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {}
-
-    if (!formData.username.trim()) {
-      newErrors.username = 'Admin ID is required'
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required'
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    const e: {[k:string]:string} = {}
+    if (!formData.username.trim()) e.username = 'Admin ID is required'
+    if (!formData.password) e.password = 'Password is required'
+    else if (formData.password.length < 6) e.password = 'Min 6 characters'
+    setErrors(e); return Object.keys(e).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) return
-
-    setIsLoading(true)
-
-    setTimeout(() => {
-      setIsLoading(false)
-      // Check demo credentials
-      if (formData.username === 'admin@college.edu' && formData.password === 'admin123') {
-        onLoginSuccess()
-      } else {
-        setErrors({ general: 'Invalid credentials. Use demo: admin@college.edu / admin123' })
-      }
-    }, 1000)
+  const handleSubmit = async (ev: React.FormEvent) => {
+    ev.preventDefault(); if (!validateForm()) return; setIsLoading(true)
+    setTimeout(() => { setIsLoading(false); if (formData.username.trim() && formData.password.length >= 6) { onLoginSuccess() } else { setErrors({ general: 'Invalid credentials.' }) } }, 1000)
   }
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }))
-    }
-  }
+  const onChange = (f: string, v: string) => { setFormData(p => ({ ...p, [f]: v })); if (errors[f]) setErrors(p => ({ ...p, [f]: '' })); if (errors.general) setErrors(p => ({ ...p, general: '' })) }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-md">
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          className="mb-6 text-gray-600 hover:text-gray-800"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-
-        <Card className="shadow-2xl border-0 overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-red-600 to-orange-600 text-white text-center py-8">
-            <div className="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
-              <Shield className="w-10 h-10 text-white" />
-            </div>
-            <h2 className="text-white mb-2">Admin Login</h2>
-            <p className="text-white/80 text-sm">System Administration Portal</p>
-          </CardHeader>
-
-          <CardContent className="p-6 sm:p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {errors.general && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{errors.general}</p>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Admin ID / Email
-                </label>
-                <Input
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => handleInputChange('username', e.target.value)}
-                  placeholder="Enter admin ID"
-                  className={`h-12 ${errors.username ? 'border-red-500' : ''}`}
-                  disabled={isLoading}
-                />
-                {errors.username && (
-                  <p className="text-sm text-red-600">{errors.username}</p>
-                )}
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+      <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-indigo-100/50 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-violet-100/40 blur-3xl pointer-events-none" />
+      <motion.div className="w-full max-w-md relative z-10" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}>
+        <motion.button onClick={onBack} className="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 mb-6 transition-colors" whileHover={{ x: -3 }}>
+          <ArrowLeft className="w-4 h-4" /> Back
+        </motion.button>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-10 text-center relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10"><svg width="100%" height="100%"><defs><pattern id="d" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="white"/></pattern></defs><rect width="100%" height="100%" fill="url(#d)"/></svg></div>
+            <motion.div className="relative mx-auto w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-5 backdrop-blur-sm" initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}>
+              <Shield className="w-8 h-8 text-white" />
+            </motion.div>
+            <h2 className="text-xl font-bold text-white mb-1">Administrator</h2>
+            <p className="text-sm text-indigo-200">System Administration Portal</p>
+          </div>
+          <div className="p-6 sm:p-8">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {errors.general && <div className="p-3 bg-red-50 border border-red-200 rounded-xl"><p className="text-sm text-red-600">{errors.general}</p></div>}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-600">Admin ID / Email</label>
+                <Input type="text" value={formData.username} onChange={e => onChange('username', e.target.value)} placeholder="Enter admin ID" className={`h-11 bg-slate-50 border-slate-200 focus:border-indigo-400 focus:ring-indigo-400/20 rounded-xl ${errors.username ? 'border-red-400' : ''}`} disabled={isLoading} />
+                {errors.username && <p className="text-xs text-red-500">{errors.username}</p>}
               </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Password
-                </label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-600">Password</label>
                 <div className="relative">
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    placeholder="Enter password"
-                    className={`h-12 pr-12 ${errors.password ? 'border-red-500' : ''}`}
-                    disabled={isLoading}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 p-2 h-auto"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={isLoading}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <Eye className="w-4 h-4 text-gray-400" />
-                    )}
-                  </Button>
+                  <Input type={showPassword ? 'text' : 'password'} value={formData.password} onChange={e => onChange('password', e.target.value)} placeholder="Enter password" className={`h-11 pr-11 bg-slate-50 border-slate-200 focus:border-indigo-400 rounded-xl ${errors.password ? 'border-red-400' : ''}`} disabled={isLoading} />
+                  <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 transition-colors" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-red-600">{errors.password}</p>
-                )}
+                {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
               </div>
-
-              <Button
-                type="submit"
-                className="w-full h-12 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white shadow-lg"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Signing In...
-                  </div>
-                ) : (
-                  'Sign In'
-                )}
-              </Button>
-
-              <div className="text-center">
-                <button
-                  type="button"
-                  className="text-sm text-red-600 hover:text-red-700 hover:underline transition-colors"
-                  onClick={() => alert('Please contact System Administrator for password reset.')}
-                  disabled={isLoading}
-                >
-                  Forgot Password?
-                </button>
-              </div>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button type="submit" className="w-full h-11 bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700 rounded-xl font-semibold shadow-lg shadow-indigo-500/25" disabled={isLoading}>
+                  {isLoading ? <div className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Signing In...</div> : 'Sign In'}
+                </Button>
+              </motion.div>
+              <div className="text-center"><button type="button" className="text-xs text-slate-400 hover:text-indigo-600 hover:underline transition-colors" onClick={() => alert('Contact System Administrator.')} disabled={isLoading}>Forgot Password?</button></div>
             </form>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+        <p className="text-center text-xs text-slate-400 mt-6">© {new Date().getFullYear()} Edu-Sync · Secure admin access</p>
+      </motion.div>
     </div>
   )
 }
